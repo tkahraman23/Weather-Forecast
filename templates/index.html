@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🌤 Weather Forecast 🌤</title>
+</head>
+<a href="/harita" style="position: fixed; bottom: 20px;right: 20px; background: rgba(0, 0, 0, 0.5); color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold;" >
+🌍 World Weather Map 🌍
+</a>
+<a  style="position: fixed; bottom: 20px; left: 20px;background: rgba(0, 0, 0, 0.5); color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none;" >
+Designer by: Burak Aşık & Tarık Kahraman
+</a>
+<body style="margin: 0; padding: 0;" >
+{% if veri %}
+<img src="{{url_for('static', filename= veri.arka_plan) }}" alt="arka plan"
+           style="position: fixed ; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; object-fit: cover;">
+{% else %}
+ <img src="{{ url_for('static', filename='varsayilan.jpg') }}" alt="arka plan"
+          style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; object-fit: cover;">
+{% endif %}
+<div style="
+display: flex; 
+flex-direction: column;
+align-items: center;
+justify-items: center;
+height: 100vh;
+color: white;
+font-size: 19px;
+text-align: center;
+font-weight: bold;
+">
+
+
+    <h1 style="color: black;">Weather Forecast</h1>
+    <form method="post">
+        <input type="text" name="sehir" placeholder="Enter a City" required>    
+        <button type="submit">Show</button>
+    </form>
+
+    {% if hata %}
+    <p style="color:black;">{{ hata }}</p>
+    {% endif %}
+
+    {% if veri %}
+<div style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 15px; margin-top: 30px; max-width: 500px;">
+    <h2>Weather in {{ veri.sehir }}: </h2>
+    <p>Tempatures: {{ veri.Sıcaklık }} °C {{ veri.emoji }}</p>
+    <p>Humudity: %{{ veri.Nem }}</p>
+    <p>wind: {{ veri.Rüzgar }} m/s</p>
+    <p>Weather: {{ veri.Açıklama }}</p>
+    <p> Time: {{ veri.Zaman }}</p>
+    <button onclick = "seslioku()">🔊 Read </button>
+</div>
+{% endif %}
+
+    {% if veri and veri.tahminler %}
+<div style="margin-top: 30px;">
+    <h1 style="color: black;">5-Day Forecast</h1>
+    <div style="display: flex; gap: 20px;">
+        {% for t in veri.tahminler %}
+        <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px;">
+            <p>{{ t.tarih }}</p>
+            <img src="https://openweathermap.org/img/wn/{{ t.icon }}@2x.png" alt="icon">
+            <p>{{ t.sicaklik }} °C</p>
+            <p>{{ t.aciklama }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+</div>
+
+<script>
+    let okundumu= false;
+    function seslioku(){
+        if(okundumu)return
+        const metin = "weather in {{veri.sehir}} "
+        + "Stempatures: {{veri.Sıcaklık}} derece"
+        + "Humudity: per cent {{veri.Nem}}"
+        + "wind: {{veri.Rüzgar}} meters per second"
+        + "weather:is {{veri.Açıklama}}.";
+        const ses= new SpeechSynthesisUtterance(metin);
+        ses.lang="en"
+        window.speechSynthesis.speak(ses);
+        okundumu=true;
+    }
+</script>
+
+</body>
+</html>
